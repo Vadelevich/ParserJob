@@ -1,11 +1,15 @@
 class Vacancy:
-    __slots__ = ...
+    __slots__ = ('name','hrep','description','salary')
 
     def __init__(self, *args, **kwargs):
-        pass
+        self.name = kwargs.get('name')
+        # self.hrep = kwargs.get('url')
+        # self.salary = kwargs.get('salary')
+        # self.description = kwargs.get('area')
+
 
     def __str__(self):
-        pass
+        return f'Вакансия{self.name} в {self.description},ссылка {self.hrep} заработная плата {self.salary} '
 
 
 
