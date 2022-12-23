@@ -14,14 +14,6 @@ class Connector:
     def __init__(self, df):
         self.__data_file = df
         self.__connect()
-    @property
-    def data_file(self):
-        return self.__data_file
-
-    @data_file.setter
-    def data_file(self, value):
-        # тут должен быть код для установки файла
-        self.__connect()
 
     def __connect(self):
         """
@@ -42,8 +34,11 @@ class Connector:
         """
         Запись данных в файл с сохранением структуры и исходных данных
         """
-        with open(self.__data_file, 'w') as f:
-            json.dump(data, f)
+        with open (self.__data_file,'r') as f:
+            r_data = json.load(f)
+            r_data.append(data)
+        with open(self.__data_file, 'w') as w:
+            json.dump(r_data, w)
 
     def select(self, query):
         """
@@ -73,7 +68,7 @@ class Connector:
         """
         try:
             with open('df.json', 'r') as f:
-                data = json.loads(f.read())
+                data = json.load(f)
 
             with open('df.json', 'w') as f:
                 result = None
@@ -81,7 +76,7 @@ class Connector:
                 for key in query.keys():
                     result = [*filter(lambda el: el[key] != query[key], result if result else data)]
 
-                f.write(json.dumps(result))
+                json.dump(result,f)
 
         except Exception as ex:
             logging.critical(ex)
@@ -96,6 +91,6 @@ if __name__ == '__main__':
     data_from_file = df.select(dict())
     assert data_from_file == [data_for_file]
 
-    df.delete(dict())
+    df.delete(dict({'id': 1}))
     data_from_file = df.select(dict())
     assert data_from_file == []
