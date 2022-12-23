@@ -1,4 +1,6 @@
+import json
 from abc import ABC, abstractmethod
+from connector import Connector
 
 import requests
 
@@ -6,12 +8,13 @@ import requests
 class Engine(ABC):
     @abstractmethod
     def get_request(self):
-        pass
+        raise NotImplementedError("Please Implement this method")
 
     @staticmethod
     def get_connector(file_name):
         """ Возвращает экземпляр класса Connector """
-        pass
+        df = Connector(f'{file_name}')
+        return df
 
 
 class HH(Engine):
@@ -35,6 +38,7 @@ class HH(Engine):
             else:
                 break
         return result
+
 
 
 class SuperJob(Engine):
@@ -67,9 +71,14 @@ class SuperJob(Engine):
 
 
 if __name__ == '__main__':
-    hh_engin = SuperJob()
+    hh_engin = HH ()
     search_word = 'python'
     vacancies_count = 100
-    result = hh_engin.get_request(search_word,vacancies_count)
+    resultHH = hh_engin.get_request(search_word,vacancies_count)
+    a = HH.get_connector('resultHH.json')
+    a.insert(resultHH)
+    sj_engin = SuperJob()
+    resultSJ = sj_engin.get_request(search_word,vacancies_count)
+    b = SuperJob.get_connector('resultSJ.json')
+    b.insert(resultSJ)
 
-    print(result)
