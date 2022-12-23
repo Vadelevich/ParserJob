@@ -59,15 +59,26 @@ class Vacancy:
 
 
 class CountMixin:
-
     @property
     def get_count_of_vacancy(self):
         """
         Вернуть количество вакансий от текущего сервиса.
         Получать количество необходимо динамически из файла.
         """
-        with open(f'{self.file}') as f:
-            file_opened = json.load(f)
+        with open(self.file,'r') as f:
+            my_file = json.load(f)
+            for i in my_file:
+                for item in i:
+                    self.count += 1
+        return self.count
+    def __str__(self):
+        return self.count
+
+
+
+
+
+
 
 
 class HHVacancy(Vacancy, CountMixin,AbstractObject):  # add counter mixin
@@ -80,22 +91,23 @@ class HHVacancy(Vacancy, CountMixin,AbstractObject):  # add counter mixin
         super().__init__(name, hrep, salary)
         self.comany_name = company_name
         self.name_class = HHVacancy.name_class
-        self.file = HHVacancy.file
+        self.count = CountMixin.get_count_of_vacancy
 
     @classmethod
     def instantiate_from_json(cls, file):
         with open(f'{file}') as f:
             file_opened = json.load(f)
-            for item in file_opened:
-                a = item.get('name')
-                b = item.get('url')
-                try:
-                    c = item.get('salary').get('from')
-                except AttributeError:
-                    c = 0
-                comany_name = item.get("employer").get('name')
+            for i in file_opened:
+                for item in i:
+                    a = item.get('name')
+                    b = item.get('url')
+                    try:
+                        c = item.get('salary').get('from')
+                    except AttributeError:
+                        c = 0
+                    comany_name = item.get("employer").get('name')
 
-                cls.vacancies.append(HHVacancy(a, b, c, comany_name))
+                    cls.vacancies.append(HHVacancy(a, b, c, comany_name))
 
 
 class SJVacancy(Vacancy,CountMixin,AbstractObject):  # add counter mixin
@@ -114,17 +126,18 @@ class SJVacancy(Vacancy,CountMixin,AbstractObject):  # add counter mixin
     def instantiate_from_json(cls, file):
         with open(f'{file}') as f:
             file_opened = json.load(f)
-            for item in file_opened:
-                a = item.get("profession")
-                b = item.get("link")
-                try:
-                    c = item.get("payment_from")
-                except AttributeError:
-                    c = 0
+            for i in file_opened:
+                for item in i:
+                    a = item.get("profession")
+                    b = item.get("link")
+                    try:
+                        c = item.get("payment_from")
+                    except AttributeError:
+                        c = 0
 
-                comany_name = item.get("firm_name")
+                    comany_name = item.get("firm_name")
 
-                cls.vacancies.append(SJVacancy(a, b, c, comany_name))
+                    cls.vacancies.append(SJVacancy(a, b, c, comany_name))
 
 
 def sorting(vacancies):
@@ -144,4 +157,9 @@ def get_top(vacancies, top_count):
 if __name__ == '__main__':
     SJVacancy.instantiate_from_json('resultSJ.json')
     sorting(SJVacancy.vacancies)
-    get_top(SJVacancy.vacancies, 300)
+    get_top(SJVacancy.vacancies, 20)
+    HHVacancy.instantiate_from_json('resultHH.json')
+    get_top(HHVacancy.vacancies,20)
+    print(HHVacancy.get_count_of_vacancy)
+
+
