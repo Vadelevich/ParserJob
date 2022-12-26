@@ -29,12 +29,11 @@ class Connector:
         except Exception as ex:
             logging.critical(ex)
 
-
     def insert(self, data):
         """
         Запись данных в файл с сохранением структуры и исходных данных
         """
-        with open (self.__data_file,'r') as f:
+        with open(self.__data_file, 'r') as f:
             r_data = json.load(f)
             r_data.append(data)
         with open(self.__data_file, 'w') as w:
@@ -76,7 +75,7 @@ class Connector:
                 for key in query.keys():
                     result = [*filter(lambda el: el[key] != query[key], result if result else data)]
 
-                json.dump(result,f)
+                json.dump(result, f)
 
         except Exception as ex:
             logging.critical(ex)

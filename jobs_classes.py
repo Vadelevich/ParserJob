@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 
 class AbstractObject(ABC):
+    """ Абстрактный метод для преопределения функции  instantiate_from_json в дочерних классах """
     @abstractmethod
     def instantiate_from_json(self):
         raise NotImplementedError("Please Implement this method")
@@ -12,17 +13,10 @@ class Vacancy:
     name_class = 'Vacancy'
     __slots__ = ('name', 'hrep', 'salary')
 
-    #
-    # @classmethod
-    # def chek_sallary(cls, other):
-    #     if other.salary == None or isinstance(other.salary,str):return other.salary =
-    #     if cls.salary == None or isinstance(cls.salary,str): return cls.salary =
-
     def __init__(self, name, hrep, salary):
         self.name = name
         self.hrep = hrep
         self.salary = salary
-        self.name_class = Vacancy.name_class
 
     def __str__(self):
         a = 'не указана'
@@ -69,9 +63,6 @@ class CountMixin:
             for i in my_file:
                 for item in i:
                     self.count += 1
-        return self.count
-
-    def __str__(self):
         return self.count
 
 
@@ -127,6 +118,7 @@ class SJVacancy(Vacancy, CountMixin, AbstractObject):  # add counter mixin
                     b = item.get("link")
                     try:
                         c = item.get("payment_from")
+                        if c == None: c = 0
                     except AttributeError:
                         c = 0
 
@@ -137,7 +129,8 @@ class SJVacancy(Vacancy, CountMixin, AbstractObject):  # add counter mixin
 
 def sorting(vacancies):
     """ Должен сортировать любой список вакансий по ежемесячной оплате (gt, lt magic methods) """
-    return sorted(vacancies)
+    vacancies = sorted(vacancies, reverse=True)
+    return vacancies
 
 
 def get_top(vacancies, top_count):
@@ -151,10 +144,10 @@ def get_top(vacancies, top_count):
 
 if __name__ == '__main__':
     SJVacancy.instantiate_from_json('resultSJ.json')
-    sorting(SJVacancy.vacancies)
-    get_top(SJVacancy.vacancies, 20)
+    sort_list = sorting(SJVacancy.vacancies)
+    get_top(sort_list, 204555)
     HHVacancy.instantiate_from_json('resultHH.json')
-    sorting(HHVacancy.vacancies)
-    # get_top(HHVacancy.vacancies,20)
+    sort_list = sorting(HHVacancy.vacancies)
+    get_top(sort_list, 2100)
 
-    # print(HHVacancy.get_count_of_vacancy)
+    print(HHVacancy.get_count_of_vacancy)
