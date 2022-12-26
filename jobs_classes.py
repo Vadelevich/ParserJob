@@ -1,19 +1,22 @@
 import json
 from abc import ABC, abstractmethod
+
+
 class AbstractObject(ABC):
     @abstractmethod
     def instantiate_from_json(self):
         raise NotImplementedError("Please Implement this method")
 
+
 class Vacancy:
     name_class = 'Vacancy'
     __slots__ = ('name', 'hrep', 'salary')
 
-    @classmethod
-    def chek_sallary(cls, other):
-        if other.salary == None or isinstance(other.salary,str): other.salary = 0
-        if cls.salary == None or isinstance(cls.salary,str): cls.salary = 0
-        return cls.salary, other.salary
+    #
+    # @classmethod
+    # def chek_sallary(cls, other):
+    #     if other.salary == None or isinstance(other.salary,str):return other.salary =
+    #     if cls.salary == None or isinstance(cls.salary,str): return cls.salary =
 
     def __init__(self, name, hrep, salary):
         self.name = name
@@ -24,27 +27,23 @@ class Vacancy:
     def __str__(self):
         a = 'не указана'
         return f'{self.name_class} : {self.comany_name}, зарплата: {self.salary if self.salary else a} руб/мес'
+
     def __eq__(self, other):
-        self.chek_sallary(other)
         return self.salary == other.salary
 
     def __ne__(self, other):
-        self.chek_sallary(other)
         return self.salary != other.salary
 
     def __gt__(self, other):
-        self.chek_sallary(other)
         return self.salary > other.salary
+
     def __ge__(self, other):
-        self.chek_sallary(other)
         return self.salary >= other.salary
 
     def __lt__(self, other):
-        self.chek_sallary(other)
         return self.salary < other.salary
 
     def __le__(self, other):
-        self.chek_sallary(other)
         return self.salary <= other.salary
 
     def __iter__(self):
@@ -65,23 +64,18 @@ class CountMixin:
         Вернуть количество вакансий от текущего сервиса.
         Получать количество необходимо динамически из файла.
         """
-        with open(self.file,'r') as f:
+        with open(self.file, 'r') as f:
             my_file = json.load(f)
             for i in my_file:
                 for item in i:
                     self.count += 1
         return self.count
+
     def __str__(self):
         return self.count
 
 
-
-
-
-
-
-
-class HHVacancy(Vacancy, CountMixin,AbstractObject):  # add counter mixin
+class HHVacancy(Vacancy, CountMixin, AbstractObject):  # add counter mixin
     """ HeadHunter Vacancy """
     vacancies = []
     name_class = "HH"
@@ -103,6 +97,7 @@ class HHVacancy(Vacancy, CountMixin,AbstractObject):  # add counter mixin
                     b = item.get('url')
                     try:
                         c = item.get('salary').get('from')
+                        if c == None: c = 0
                     except AttributeError:
                         c = 0
                     comany_name = item.get("employer").get('name')
@@ -110,7 +105,7 @@ class HHVacancy(Vacancy, CountMixin,AbstractObject):  # add counter mixin
                     cls.vacancies.append(HHVacancy(a, b, c, comany_name))
 
 
-class SJVacancy(Vacancy,CountMixin,AbstractObject):  # add counter mixin
+class SJVacancy(Vacancy, CountMixin, AbstractObject):  # add counter mixin
     """ SuperJob Vacancy """
     vacancies = []
     name_class = "SJ"
@@ -159,7 +154,7 @@ if __name__ == '__main__':
     sorting(SJVacancy.vacancies)
     get_top(SJVacancy.vacancies, 20)
     HHVacancy.instantiate_from_json('resultHH.json')
-    get_top(HHVacancy.vacancies,20)
-    print(HHVacancy.get_count_of_vacancy)
+    sorting(HHVacancy.vacancies)
+    # get_top(HHVacancy.vacancies,20)
 
-
+    # print(HHVacancy.get_count_of_vacancy)
